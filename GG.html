@@ -1,0 +1,2476 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER OPS // RECON ENGINE V6.0 | WARCHIEF COMMAND</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Rajdhani:wght@400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           CYBERPUNK 2077 THEME ENGINE
+           ========================================= */
+        :root {
+            /* -- CORE PALETTE -- */
+            --void-black: #010101;
+            --cyber-dark: #0a0a0f;
+            --matrix-green: #00ff41;
+            --neon-blue: #00f3ff;
+            --hacker-red: #ff003c;
+            --cyber-purple: #bc13fe;
+            --sunset-orange: #ff5e00;
+            --crypto-gold: #ffd700;
+            
+            /* -- UI LAYERS -- */
+            --layer-0: #030304;
+            --layer-1: #07070a;
+            --layer-2: #0c0c12;
+            --layer-3: #12121a;
+            
+            /* -- GLASS EFFECTS -- */
+            --glass-dark: rgba(10, 10, 15, 0.85);
+            --glass-light: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: rgba(0, 243, 255, 0.1);
+            
+            /* -- TEXT HIERARCHY -- */
+            --text-primary: #f0f0f0;
+            --text-secondary: #8a8aa3;
+            --text-tertiary: #5a5a7a;
+            --text-code: #a5b3ce;
+            --text-matrix: #00ff41;
+            
+            /* -- TYPOGRAPHY -- */
+            --font-cyber: 'Orbitron', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            
+            /* -- ANIMATIONS -- */
+            --ease-cyber: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-snap: cubic-bezier(0.77, 0, 0.175, 1);
+            
+            /* -- SHADOWS -- */
+            --shadow-cyber: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --shadow-neon: 0 0 20px currentColor;
+            --shadow-glow: 0 0 40px rgba(0, 243, 255, 0.2);
+        }
+
+        [data-theme="light"] {
+            --void-black: #e8f4ff;
+            --cyber-dark: #f0f7ff;
+            --matrix-green: #008833;
+            --neon-blue: #0066cc;
+            --hacker-red: #cc0000;
+            --cyber-purple: #7a00cc;
+            --sunset-orange: #cc4400;
+            --crypto-gold: #ccaa00;
+            
+            --layer-0: #ffffff;
+            --layer-1: #f5f8ff;
+            --layer-2: #eef3ff;
+            --layer-3: #e6edff;
+            
+            --glass-dark: rgba(255, 255, 255, 0.9);
+            --glass-light: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-glow: rgba(0, 102, 204, 0.1);
+            
+            --text-primary: #0a0a14;
+            --text-secondary: #4a4a6a;
+            --text-tertiary: #7a7a9a;
+            --text-code: #2a3a5a;
+            --text-matrix: #006622;
+        }
+
+        /* =========================================
+           RESET & BASE STYLES
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-tech);
+            background-color: var(--void-black);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 85% 85%, rgba(188, 19, 254, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 60, 0.02) 0%, transparent 70%),
+                linear-gradient(135deg, rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(45deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        /* =========================================
+           SYSTEM OVERLAYS & EFFECTS
+           ========================================= */
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 2px,
+                rgba(0, 0, 0, 0.15) 4px
+            );
+            animation: scan 10s linear infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .glitch-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9998;
+            background: linear-gradient(
+                rgba(0, 255, 65, 0.02),
+                transparent,
+                rgba(255, 0, 60, 0.02)
+            );
+            animation: glitch 15s infinite;
+            opacity: 0.05;
+        }
+
+        @keyframes glitch {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .pulse-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 10px var(--neon-blue);
+            animation: pulse-dot 3s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* =========================================
+           CUSTOM SCROLLBAR
+           ========================================= */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--layer-1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-blue), var(--cyber-purple));
+            border-radius: 4px;
+            border: 2px solid var(--layer-1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--hacker-red), var(--sunset-orange));
+        }
+
+        /* =========================================
+           NEON TEXT EFFECTS
+           ========================================= */
+        .neon-text {
+            text-shadow: 
+                0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 15px currentColor;
+            animation: neon-flicker 3s infinite alternate;
+        }
+
+        .matrix-text {
+            color: var(--matrix-green);
+            text-shadow: 
+                0 0 10px var(--matrix-green),
+                0 0 20px var(--matrix-green),
+                0 0 30px var(--matrix-green);
+            animation: matrix-flicker 2s infinite;
+        }
+
+        @keyframes neon-flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+                text-shadow: 
+                    0 0 5px currentColor,
+                    0 0 10px currentColor,
+                    0 0 15px currentColor;
+            }
+            20%, 24%, 55% {
+                opacity: 0.8;
+                text-shadow: 
+                    0 0 2px currentColor,
+                    0 0 5px currentColor,
+                    0 0 7px currentColor;
+            }
+        }
+
+        @keyframes matrix-flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* =========================================
+           GLASSMORPHIC COMPONENTS
+           ========================================= */
+        .cyber-glass {
+            background: var(--glass-dark);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-cyber);
+        }
+
+        .cyber-card {
+            background: linear-gradient(135deg, var(--layer-2), var(--layer-3));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-cyber);
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(0, 243, 255, 0.05) 50%,
+                transparent 70%
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+
+        .cyber-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 
+                0 15px 35px -10px rgba(0, 0, 0, 0.5),
+                var(--shadow-glow);
+        }
+
+        /* =========================================
+           SIDEBAR CONTAINER
+           ========================================= */
+        .cyber-sidebar {
+            width: 280px;
+            min-width: 280px;
+            background: linear-gradient(180deg, var(--layer-0), var(--layer-1));
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-cyber);
+        }
+
+        .cyber-sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--hacker-red),
+                var(--sunset-orange),
+                var(--crypto-gold),
+                var(--matrix-green),
+                var(--neon-blue),
+                var(--cyber-purple)
+            );
+            animation: sidebar-glow 10s linear infinite;
+        }
+
+        @keyframes sidebar-glow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* =========================================
+           BRAND HEADER
+           ========================================= */
+        .brand-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .brand-text {
+            font-family: var(--font-cyber);
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .brand-version {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-family: var(--font-code);
+            letter-spacing: 2px;
+        }
+
+        /* =========================================
+           NAVIGATION SYSTEM
+           ========================================= */
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            padding: 0 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s var(--ease-cyber);
+            position: relative;
+            overflow: hidden;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, var(--neon-blue), var(--cyber-purple));
+            transform: translateX(-100%);
+            transition: transform 0.3s var(--ease-cyber);
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), transparent);
+        }
+
+        .nav-item:hover::before {
+            transform: translateX(0);
+        }
+
+        .nav-item.active {
+            color: var(--neon-blue);
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent);
+            border-left-color: var(--neon-blue);
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--neon-blue);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        /* =========================================
+           SYSTEM STATUS
+           ========================================= */
+        .system-status {
+            padding: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, transparent, rgba(0, 243, 255, 0.05));
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-size: 0.75rem;
+            color: var(--matrix-green);
+            font-family: var(--font-code);
+        }
+
+        /* =========================================
+           MAIN DASHBOARD
+           ========================================= */
+        .cyber-dashboard {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* =========================================
+           TOP COMMAND BAR
+           ========================================= */
+        .command-bar {
+            height: 70px;
+            background: linear-gradient(180deg, var(--layer-0), var(--layer-1));
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 50;
+        }
+
+        .command-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .menu-toggle {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        .menu-toggle:hover {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+            box-shadow: var(--shadow-glow);
+            transform: rotate(90deg);
+        }
+
+        .global-search {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-blue);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 40px;
+            background: var(--layer-2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0 1rem 0 2.5rem;
+            color: var(--text-primary);
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        .search-input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: var(--shadow-glow);
+            background: var(--layer-1);
+        }
+
+        /* =========================================
+           COMMAND ACTIONS
+           ========================================= */
+        .command-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .cyber-button {
+            height: 40px;
+            padding: 0 1.25rem;
+            background: linear-gradient(135deg, var(--layer-2), var(--layer-3));
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-tech);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-cyber);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            transform: translateX(-100%);
+            transition: transform 0.6s var(--ease-cyber);
+        }
+
+        .cyber-button:hover::before {
+            transform: translateX(100%);
+        }
+
+        .cyber-button:hover {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-2px);
+        }
+
+        .cyber-button.primary {
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            color: white;
+            border: none;
+        }
+
+        .cyber-button.primary:hover {
+            background: linear-gradient(135deg, var(--cyber-purple), var(--neon-blue));
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .cyber-button.danger {
+            background: linear-gradient(135deg, var(--hacker-red), var(--sunset-orange));
+            color: white;
+            border: none;
+        }
+
+        .cyber-button.danger:hover {
+            background: linear-gradient(135deg, var(--sunset-orange), var(--hacker-red));
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.3);
+        }
+
+        /* =========================================
+           WORKSPACE CONTAINER
+           ========================================= */
+        .workspace {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* =========================================
+           HERO COMMAND CENTER
+           ========================================= */
+        .command-center {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            perspective: 1200px;
+        }
+
+        /* TARGET LOCK CARD */
+        .target-card {
+            grid-column: span 1;
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border: 1px solid var(--neon-blue);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .target-card::before {
+            content: 'TARGET DESIGNATION';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--layer-0);
+            padding: 0 10px;
+            color: var(--neon-blue);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: var(--font-code);
+        }
+
+        .target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .target-title {
+            font-family: var(--font-cyber);
+            font-size: 1.6rem;
+            color: var(--neon-blue);
+            letter-spacing: 1px;
+        }
+
+        .target-badge {
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .target-input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cyber-input {
+            flex: 1;
+            height: 50px;
+            background: var(--layer-0);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0 1rem;
+            color: var(--matrix-green);
+            font-family: var(--font-code);
+            font-size: 1.1rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        .cyber-input:focus {
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            background: var(--layer-1);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            height: 50px;
+            padding: 0 1.5rem;
+            background: linear-gradient(135deg, var(--layer-2), var(--layer-3));
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-tech);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-cyber);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            color: white;
+            border: none;
+        }
+
+        .action-btn.primary:hover {
+            background: linear-gradient(135deg, var(--cyber-purple), var(--neon-blue));
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--matrix-green), #00cc33);
+            color: var(--layer-0);
+            border: none;
+        }
+
+        .action-btn.success:hover {
+            background: linear-gradient(135deg, #00cc33, var(--matrix-green));
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+        }
+
+        /* QUICK ACTION CARDS */
+        .quick-card {
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s var(--ease-cyber);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .quick-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--layer-0), var(--layer-1));
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s var(--ease-cyber);
+        }
+
+        .quick-card:hover .quick-icon {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .quick-card.install .quick-icon {
+            color: var(--hacker-red);
+            border-color: var(--hacker-red);
+        }
+
+        .quick-card.install:hover .quick-icon {
+            background: rgba(255, 0, 60, 0.1);
+            box-shadow: 0 0 30px var(--hacker-red);
+        }
+
+        .quick-card.jwt .quick-icon {
+            color: var(--cyber-purple);
+            border-color: var(--cyber-purple);
+        }
+
+        .quick-card.jwt:hover .quick-icon {
+            background: rgba(188, 19, 254, 0.1);
+            box-shadow: 0 0 30px var(--cyber-purple);
+        }
+
+        .quick-card.crypto .quick-icon {
+            color: var(--crypto-gold);
+            border-color: var(--crypto-gold);
+        }
+
+        .quick-card.crypto:hover .quick-icon {
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 30px var(--crypto-gold);
+        }
+
+        .quick-title {
+            font-family: var(--font-cyber);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .quick-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: var(--font-code);
+        }
+
+        /* =========================================
+           TOOLS DATAGRID
+           ========================================= */
+        .tools-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            color: white;
+        }
+
+        .section-title {
+            font-family: var(--font-cyber);
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* =========================================
+           TOOL CARD DESIGN
+           ========================================= */
+        .tool-card {
+            background: linear-gradient(135deg, var(--layer-2), var(--layer-3));
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--ease-cyber);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .tool-name {
+            font-family: var(--font-cyber);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .tool-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .tag-passive {
+            background: linear-gradient(135deg, var(--matrix-green), #00cc33);
+            color: var(--layer-0);
+        }
+
+        .tag-active {
+            background: linear-gradient(135deg, var(--hacker-red), var(--sunset-orange));
+            color: white;
+        }
+
+        .tag-util {
+            background: linear-gradient(135deg, var(--crypto-gold), #ffaa00);
+            color: var(--layer-0);
+        }
+
+        .tag-link {
+            background: linear-gradient(135deg, var(--cyber-purple), #9d00ff);
+            color: white;
+        }
+
+        .tool-command {
+            background: var(--layer-0);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--matrix-green);
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tool-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .tool-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tool-btn {
+            flex: 1;
+            height: 36px;
+            padding: 0 1rem;
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-cyber);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.primary {
+            background: linear-gradient(135deg, var(--neon-blue), var(--cyber-purple));
+            color: white;
+            border: none;
+        }
+
+        .tool-btn.primary:hover {
+            background: linear-gradient(135deg, var(--cyber-purple), var(--neon-blue));
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        /* =========================================
+           MODAL SYSTEMS
+           ========================================= */
+        .cyber-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: modal-fade 0.3s var(--ease-cyber);
+        }
+
+        @keyframes modal-fade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .cyber-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 900px;
+            max-height: 85vh;
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border: 1px solid var(--neon-blue);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                var(--shadow-glow);
+            animation: modal-slide 0.4s var(--ease-cyber);
+        }
+
+        @keyframes modal-slide {
+            from { transform: translateY(30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(90deg, var(--layer-0), var(--layer-1));
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: var(--font-cyber);
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            letter-spacing: 1px;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        .modal-close:hover {
+            color: var(--hacker-red);
+            border-color: var(--hacker-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: calc(85vh - 80px);
+        }
+
+        /* =========================================
+           COMMAND MATRIX TABLE
+           ========================================= */
+        .command-matrix {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .command-matrix th {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--neon-blue);
+            font-family: var(--font-tech);
+            font-weight: 700;
+            text-align: left;
+            letter-spacing: 1px;
+        }
+
+        .command-matrix td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+        }
+
+        .command-matrix tr:hover td {
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+        }
+
+        .command-group {
+            color: var(--matrix-green);
+            font-weight: 700;
+            font-family: var(--font-cyber);
+        }
+
+        .command-text {
+            color: var(--text-code);
+            font-family: var(--font-code);
+            padding: 0.5rem;
+            background: var(--layer-0);
+            border-radius: 6px;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--neon-blue);
+        }
+
+        .command-note {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* =========================================
+           UTILITY MODULES
+           ========================================= */
+        .io-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .io-box textarea {
+            width: 100%;
+            height: 300px;
+            background: var(--layer-0);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--matrix-green);
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            transition: all 0.3s var(--ease-cyber);
+        }
+
+        .io-box textarea:focus {
+            border-color: var(--matrix-green);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        .utility-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        /* =========================================
+           TOAST NOTIFICATIONS
+           ========================================= */
+        .cyber-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--layer-1), var(--layer-2));
+            border: 1px solid var(--matrix-green);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: var(--matrix-green);
+            font-family: var(--font-tech);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transform: translateX(150%);
+            transition: transform 0.4s var(--ease-cyber);
+            z-index: 10000;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(0, 255, 65, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cyber-toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* =========================================
+           RESPONSIVE DESIGN
+           ========================================= */
+        @media (max-width: 1400px) {
+            .command-center {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            .target-card {
+                grid-column: span 3;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .cyber-sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100%;
+                z-index: 1000;
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.8);
+            }
+            
+            .cyber-sidebar.active {
+                left: 0;
+            }
+            
+            .command-center {
+                grid-template-columns: 1fr;
+            }
+            
+            .target-card {
+                grid-column: span 1;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .io-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .command-bar {
+                padding: 0 1rem;
+            }
+            
+            .global-search {
+                width: 250px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+        }
+
+        /* =========================================
+           SPECIAL EFFECTS
+           ========================================= */
+        .cyber-loader {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hacker-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            animation: glitch-1 2s infinite linear alternate-reverse;
+            color: var(--hacker-red);
+            z-index: -1;
+        }
+
+        .glitch-text::after {
+            animation: glitch-2 3s infinite linear alternate-reverse;
+            color: var(--neon-blue);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-2 {
+            0% { transform: translate(0); }
+            10% { transform: translate(-1px, 1px); }
+            30% { transform: translate(-1px, -1px); }
+            50% { transform: translate(1px, 1px); }
+            70% { transform: translate(1px, -1px); }
+            90% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- System Overlays -->
+    <div class="scanlines"></div>
+    <div class="glitch-overlay"></div>
+    <div class="hacker-grid"></div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="cyber-sidebar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand-logo">
+                <div class="brand-icon">
+                    <i class="fas fa-dragon"></i>
+                </div>
+                <div>
+                    <div class="brand-text">CYBER OPS</div>
+                    <div class="brand-version">V6.0 // WARCHIEF COMMAND</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-container" id="navContainer">
+            <!-- Navigation will be injected here -->
+        </div>
+
+        <div class="system-status">
+            <div class="status-header">
+                <div class="status-title">SYSTEM STATUS</div>
+                <div class="status-indicator">
+                    <div class="pulse-dot"></div>
+                    <div class="status-text">OPERATIONAL</div>
+                </div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-tertiary); font-family: var(--font-code);">
+                <div style="margin-bottom: 4px;">85+ MODULES LOADED</div>
+                <div>READY FOR PENETRATION</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <main class="cyber-dashboard">
+        <!-- Command Bar -->
+        <div class="command-bar">
+            <div class="command-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="global-search">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="globalSearch" placeholder="SEARCH DATABASE...">
+                </div>
+            </div>
+            <div class="command-actions">
+                <button class="cyber-button" onclick="toggleTheme()">
+                    <i class="fas fa-adjust"></i>
+                    VISUAL MODE
+                </button>
+                <button class="cyber-button primary" onclick="window.open('https://github.com/adce626', '_blank')">
+                    <i class="fab fa-github"></i>
+                    GITHUB
+                </button>
+                <button class="cyber-button danger" onclick="generateFullReport()">
+                    <i class="fas fa-file-export"></i>
+                    EXPORT
+                </button>
+            </div>
+        </div>
+
+        <!-- Workspace -->
+        <div class="workspace" id="workspace">
+            <!-- Command Center -->
+            <div class="command-center">
+                <!-- Target Card -->
+                <div class="target-card">
+                    <div class="target-header">
+                        <div class="target-title">🎯 TARGET DESIGNATION</div>
+                        <div class="target-badge">STATUS: ACTIVE</div>
+                    </div>
+                    <div class="target-input-group">
+                        <input type="text" class="cyber-input" id="targetInput" value="example.com" placeholder="ENTER DOMAIN / IP / CIDR">
+                    </div>
+                    <div class="action-group">
+                        <button class="action-btn primary" onclick="updateScope()">
+                            <i class="fas fa-sync-alt"></i>
+                            INJECT TARGET
+                        </button>
+                        <button class="action-btn success" onclick="generateReconScript()">
+                            <i class="fas fa-terminal"></i>
+                            GENERATE SCRIPT
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Action Cards -->
+                <div class="quick-card install" onclick="generateInstallScript()">
+                    <div class="quick-icon">
+                        <i class="fas fa-cloud-download-alt"></i>
+                    </div>
+                    <div class="quick-title">📦 INSTALLER</div>
+                    <div class="quick-desc">Auto-Build Environment</div>
+                </div>
+
+                <div class="quick-card jwt" onclick="openUtil('jwt')">
+                    <div class="quick-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div class="quick-title">🔑 JWT OPS</div>
+                    <div class="quick-desc">Decode & Forge Tokens</div>
+                </div>
+
+                <div class="quick-card crypto" onclick="openUtil('crypto')">
+                    <div class="quick-icon">
+                        <i class="fas fa-shield-virus"></i>
+                    </div>
+                    <div class="quick-title">🔐 CRYPTO</div>
+                    <div class="quick-desc">Encryption Suite</div>
+                </div>
+            </div>
+
+            <!-- Tools Container -->
+            <div id="toolsContainer"></div>
+        </div>
+    </main>
+
+    <!-- Modal Systems -->
+    <div class="cyber-modal" id="utilModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="utilTitle">UTILITY MODULE</div>
+                <button class="modal-close" onclick="closeModal('utilModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="utilBody"></div>
+        </div>
+    </div>
+
+    <div class="cyber-modal" id="cmdModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="cmdTitle">COMMAND MATRIX</div>
+                <button class="modal-close" onclick="closeModal('cmdModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="command-matrix">
+                    <tbody id="cmdList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="cyber-toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span id="toastMessage">ACTION SUCCESSFUL</span>
+    </div>
+
+    <script>
+        // =========================================
+        // CYBER OPS DATABASE - ENHANCED
+        // =========================================
+        const categories = {
+            "recon": { label: "RECONNAISSANCE", icon: "fa-binoculars", color: "#00f3ff" },
+            "web": { label: "WEB EXPLOITATION", icon: "fa-spider", color: "#ff003c" },
+            "vuln": { label: "VULNERABILITY", icon: "fa-biohazard", color: "#00ff41" },
+            "cloud": { label: "CLOUD & API", icon: "fa-cloud", color: "#bc13fe" },
+            "cms": { label: "CMS SCANNING", icon: "fa-cubes", color: "#ff5e00" },
+            "dork": { label: "GOOGLE HACKING", icon: "fa-search", color: "#ffd700" },
+            "crypto": { label: "CRYPTOGRAPHY", icon: "fa-lock", color: "#9d00ff" },
+            "utils": { label: "UTILITIES", icon: "fa-tools", color: "#00ccff" },
+            "resources": { label: "KNOWLEDGE BASE", icon: "fa-book", color: "#ff00aa" }
+        };
+
+        const toolsDB = [
+            // === RECONNAISSANCE ===
+            { id: "subfinder", name: "SUBFINDER", cat: "recon", tag: "passive", desc: "Fast passive subdomain enumeration using multiple data sources.", cmds: [
+                { grp: "BASIC", cmd: "subfinder -d {{target}} -o subs.txt", note: "Standard enumeration" },
+                { grp: "DEEP", cmd: "subfinder -d {{target}} -all -recursive -o subs_full.txt", note: "Deep recursive scan" },
+                { grp: "SILENT", cmd: "subfinder -d {{target}} -silent", note: "Pipeline ready output" }
+            ]},
+            { id: "amass", name: "AMASS", cat: "recon", tag: "active", desc: "In-depth DNS enumeration and attack surface mapping.", cmds: [
+                { grp: "ACTIVE", cmd: "amass enum -active -d {{target}}", note: "Active enumeration" },
+                { grp: "PASSIVE", cmd: "amass enum -passive -d {{target}}", note: "No traffic to target" },
+                { grp: "INTEL", cmd: "amass intel -whois -d {{target}}", note: "Reverse Whois lookup" }
+            ]},
+            { id: "massdns", name: "MASSDNS", cat: "recon", tag: "active", desc: "High-performance DNS stub resolver for bulk lookups.", cmds: [
+                { grp: "RESOLVE", cmd: "cat subs.txt | massdns -r resolvers.txt -o S -w resolved.txt", note: "Mass DNS resolution" }
+            ]},
+            { id: "httpx", name: "HTTPX", cat: "recon", tag: "util", desc: "Fast and multi-purpose HTTP toolkit for probing.", cmds: [
+                { grp: "PROBE", cmd: "cat subs.txt | httpx -title -sc -tech-detect -o live.txt", note: "Probe for live hosts" },
+                { grp: "SCREENSHOT", cmd: "httpx -l subs.txt -ss -o screenshots", note: "Visual reconnaissance" }
+            ]},
+            { id: "naabu", name: "NAABU", cat: "recon", tag: "active", desc: "Fast port scanner written in Go with SYN scan capabilities.", cmds: [
+                { grp: "SCAN", cmd: "naabu -host {{target}} -p - -o ports.txt", note: "Full port scan" },
+                { grp: "TOP", cmd: "naabu -host {{target}} -top-ports 100", note: "Quick port check" }
+            ]},
+            { id: "shodan", name: "SHODAN CLI", cat: "recon", tag: "passive", desc: "Search Engine for Internet-connected devices.", cmds: [
+                { grp: "HOST", cmd: "shodan host {{target}}", note: "Get host details" },
+                { grp: "COUNT", cmd: "shodan count hostname:{{target}}", note: "Count exposed assets" }
+            ]},
+            { id: "censys", name: "CENSYS", cat: "recon", tag: "passive", desc: "Attack surface visibility and threat intelligence.", cmds: [
+                { grp: "SEARCH", cmd: "censys search {{target}}", note: "Query database" }
+            ]},
+            { id: "dnsrecon", name: "DNSRECON", cat: "recon", tag: "active", desc: "DNS enumeration script for comprehensive recon.", cmds: [
+                { grp: "STD", cmd: "dnsrecon -d {{target}}", note: "Standard enumeration" },
+                { grp: "ZONE", cmd: "dnsrecon -d {{target}} -t axfr", note: "Zone transfer attempt" }
+            ]},
+            { id: "theharvester", name: "THEHARVESTER", cat: "recon", tag: "passive", desc: "E-mail, subdomain and people names harvester.", cmds: [
+                { grp: "SCAN", cmd: "theHarvester -d {{target}} -b all -f results.html", note: "Harvest all sources" }
+            ]},
+            { id: "findomain", name: "FINDOMAIN", cat: "recon", tag: "passive", desc: "Cross-platform subdomain enumerator with API integration.", cmds: [
+                { grp: "RUN", cmd: "findomain -t {{target}} -u findomain.txt", note: "Fast subdomain discovery" }
+            ]},
+            { id: "assetfinder", name: "ASSETFINDER", cat: "recon", tag: "passive", desc: "Find domains and subdomains related to a given domain.", cmds: [
+                { grp: "RUN", cmd: "assetfinder --subs-only {{target}}", note: "Simple enumeration" }
+            ]},
+            { id: "waybackurls", name: "WAYBACKURLS", cat: "recon", tag: "passive", desc: "Fetch URLs from Wayback Machine archives.", cmds: [
+                { grp: "FETCH", cmd: "echo {{target}} | waybackurls > urls.txt", note: "Archive URL collection" }
+            ]},
+            { id: "gau", name: "GAU", cat: "recon", tag: "passive", desc: "Get All URLs from AlienVault OTX, Wayback Machine, and Common Crawl.", cmds: [
+                { grp: "GET", cmd: "gau {{target}} | sort -u > urls.txt", note: "Fetch historical URLs" }
+            ]},
+
+            // === WEB EXPLOITATION ===
+            { id: "ffuf", name: "FFUF", cat: "web", tag: "active", desc: "Fast web fuzzer written in Go with extensive features.", cmds: [
+                { grp: "DIR", cmd: "ffuf -u https://{{target}}/FUZZ -w wordlist.txt -mc 200,301,302", note: "Directory brute-force" },
+                { grp: "VHOST", cmd: "ffuf -u https://{{target}} -H 'Host: FUZZ.{{target}}' -w subs.txt", note: "Virtual host discovery" },
+                { grp: "PARAM", cmd: "ffuf -u https://{{target}}/endpoint?FUZZ=test -w params.txt", note: "Parameter fuzzing" }
+            ]},
+            { id: "katana", name: "KATANA", cat: "web", tag: "active", desc: "Next-generation crawling and spidering framework.", cmds: [
+                { grp: "CRAWL", cmd: "katana -u https://{{target}} -d 5 -o crawled.txt", note: "Deep web crawling" }
+            ]},
+            { id: "nuclei", name: "NUCLEI", cat: "web", tag: "active", desc: "Fast and customizable vulnerability scanner based on templates.", cmds: [
+                { grp: "CRITICAL", cmd: "nuclei -u https://{{target}} -s critical,high -o nuclei.txt", note: "High severity scan" },
+                { grp: "CVE", cmd: "nuclei -u https://{{target}} -tags cve -o cve.txt", note: "CVE vulnerability scan" },
+                { grp: "FUZZ", cmd: "nuclei -u https://{{target}} -t fuzzing/ -o fuzz.txt", note: "Fuzzing templates" }
+            ]},
+            { id: "sqlmap", name: "SQLMAP", cat: "web", tag: "active", desc: "Automatic SQL injection and database takeover tool.", cmds: [
+                { grp: "WIZARD", cmd: "sqlmap -u 'https://{{target}}/?id=1' --wizard", note: "Guided SQL injection" },
+                { grp: "CRAWL", cmd: "sqlmap -u https://{{target}} --crawl=3", note: "Crawl and test" }
+            ]},
+            { id: "xsstrike", name: "XSSTRIKE", cat: "web", tag: "active", desc: "Advanced XSS detection suite with multiple bypass techniques.", cmds: [
+                { grp: "SCAN", cmd: "python3 xsstrike.py -u 'https://{{target}}/?q=test'", note: "XSS vulnerability scan" }
+            ]},
+            { id: "dalfox", name: "DALFOX", cat: "web", tag: "active", desc: "Parameter analysis and XSS scanning tool.", cmds: [
+                { grp: "PIPE", cmd: "cat urls.txt | dalfox pipe", note: "Pipeline XSS scanning" }
+            ]},
+            { id: "arjun", name: "ARJUN", cat: "web", tag: "active", desc: "HTTP parameter discovery suite with smart detection.", cmds: [
+                { grp: "SCAN", cmd: "arjun -u https://{{target}}/endpoint -oT arjun.txt", note: "Hidden parameter discovery" }
+            ]},
+            { id: "whatweb", name: "WHATWEB", cat: "web", tag: "passive", desc: "Next generation web scanner with plugin architecture.", cmds: [
+                { grp: "SCAN", cmd: "whatweb -a 3 https://{{target}} -v", note: "Aggressive fingerprinting" }
+            ]},
+            { id: "nikto", name: "NIKTO", cat: "web", tag: "active", desc: "Web server scanner that tests for multiple vulnerabilities.", cmds: [
+                { grp: "SCAN", cmd: "nikto -h https://{{target}} -o nikto.html", note: "Comprehensive web scan" }
+            ]},
+            { id: "wapiti", name: "WAPITI", cat: "web", tag: "active", desc: "Web application vulnerability scanner with reporting.", cmds: [
+                { grp: "SCAN", cmd: "wapiti -u https://{{target}} -f html -o report", note: "Automated vulnerability scan" }
+            ]},
+            { id: "commix", name: "COMMIX", cat: "web", tag: "active", desc: "Automated command injection exploitation tool.", cmds: [
+                { grp: "SCAN", cmd: "commix --url='http://{{target}}/cmd.php?id=1'", note: "Command injection test" }
+            ]},
+            { id: "gobuster", name: "GOBUSTER", cat: "web", tag: "active", desc: "Directory/file & DNS busting tool written in Go.", cmds: [
+                { grp: "DIR", cmd: "gobuster dir -u https://{{target}} -w wordlist.txt", note: "Directory brute-force" },
+                { grp: "DNS", cmd: "gobuster dns -d {{target}} -w subdomains.txt", note: "DNS subdomain brute-force" }
+            ]},
+            { id: "dirsearch", name: "DIRSEARCH", cat: "web", tag: "active", desc: "Web path scanner with recursive and threading options.", cmds: [
+                { grp: "SCAN", cmd: "dirsearch -u https://{{target}} -e php,html,js -r", note: "Recursive directory scan" }
+            ]},
+
+            // === VULNERABILITY ===
+            { id: "grype", name: "GRYPE", cat: "vuln", tag: "util", desc: "Vulnerability scanner for container images and filesystems.", cmds: [
+                { grp: "SCAN", cmd: "grype dir:/path/to/scan -o table", note: "File system vulnerability scan" }
+            ]},
+            { id: "trivy", name: "TRIVY", cat: "vuln", tag: "util", desc: "Simple and comprehensive vulnerability scanner for containers.", cmds: [
+                { grp: "SCAN", cmd: "trivy image alpine:latest", note: "Container image scan" }
+            ]},
+            { id: "vulners", name: "VULNERS", cat: "vuln", tag: "util", desc: "Vulnerability scanner based on Vulners.com database.", cmds: [
+                { grp: "SCAN", cmd: "vulners -s {{target}}", note: "Vulnerability database scan" }
+            ]},
+            { id: "openscap", name: "OPENSCAP", cat: "vuln", tag: "util", desc: "Open Source Security Compliance Solution.", cmds: [
+                { grp: "SCAN", cmd: "oscap xccdf eval --profile standard --results scan.xml", note: "Security compliance scan" }
+            ]},
+            { id: "lynis", name: "LYNIS", cat: "vuln", tag: "util", desc: "Security auditing tool for Unix/Linux systems.", cmds: [
+                { grp: "AUDIT", cmd: "lynis audit system", note: "System security audit" }
+            ]},
+
+            // === CLOUD & API ===
+            { id: "cloud_enum", name: "CLOUD_ENUM", cat: "cloud", tag: "passive", desc: "Enumerate public cloud resources across AWS, Azure, GCP.", cmds: [
+                { grp: "SCAN", cmd: "cloud_enum.py -k {{target}}", note: "Cloud resource enumeration" }
+            ]},
+            { id: "kiterunner", name: "KITERUNNER", cat: "cloud", tag: "active", desc: "Contextual content discovery tool for API endpoints.", cmds: [
+                { grp: "SCAN", cmd: "kr scan https://{{target}} -w routes-large.kite", note: "API endpoint discovery" }
+            ]},
+            { id: "jwt_tool", name: "JWT TOOL", cat: "cloud", tag: "util", desc: "Toolkit for validating, debugging, and forging JWTs.", cmds: [
+                { grp: "CRACK", cmd: "python3 jwt_tool.py <token> -C -d dictionary.txt", note: "JWT secret cracking" }
+            ]},
+            { id: "awscli", name: "AWS CLI", cat: "cloud", tag: "util", desc: "Unified tool to manage AWS services.", cmds: [
+                { grp: "S3", cmd: "aws s3 ls s3://bucket-name --no-sign-request", note: "List S3 bucket (anonymous)" }
+            ]},
+            { id: "scoutsuite", name: "SCOUTSUITE", cat: "cloud", tag: "passive", desc: "Multi-cloud security auditing tool.", cmds: [
+                { grp: "AUDIT", cmd: "scout aws", note: "AWS security audit" }
+            ]},
+            { id: "pacu", name: "PACU", cat: "cloud", tag: "active", desc: "AWS exploitation framework.", cmds: [
+                { grp: "RUN", cmd: "pacu", note: "Launch AWS exploitation framework" }
+            ]},
+            { id: "cloudsploit", name: "CLOUDSPLOIT", cat: "cloud", tag: "passive", desc: "AWS security and configuration scanner.", cmds: [
+                { grp: "SCAN", cmd: "cloudsploit scan", note: "Cloud security scan" }
+            ]},
+            { id: "cfripper", name: "CFRIPPER", cat: "cloud", tag: "util", desc: "AWS CloudFormation security analysis tool.", cmds: [
+                { grp: "ANALYZE", cmd: "cfripper template.json", note: "CloudFormation security analysis" }
+            ]},
+
+            // === CMS SCANNING ===
+            { id: "wpscan", name: "WPSCAN", cat: "cms", tag: "active", desc: "Black box WordPress vulnerability scanner.", cmds: [
+                { grp: "ENUM", cmd: "wpscan --url https://{{target}} --enumerate p,t,u", note: "Plugin/theme/user enumeration" },
+                { grp: "BRUTE", cmd: "wpscan --url https://{{target}} -P rockyou.txt -U users.txt", note: "Password attack" }
+            ]},
+            { id: "joomscan", name: "JOOMSCAN", cat: "cms", tag: "active", desc: "Joomla vulnerability scanner with exploitation.", cmds: [
+                { grp: "SCAN", cmd: "joomscan -u https://{{target}}", note: "Joomla vulnerability scan" }
+            ]},
+            { id: "droopescan", name: "DROOPESCAN", cat: "cms", tag: "active", desc: "Drupal, SilverStripe, and WordPress scanner.", cmds: [
+                { grp: "SCAN", cmd: "droopescan scan drupal -u https://{{target}}", note: "Drupal vulnerability scan" }
+            ]},
+            { id: "cmseek", name: "CMSEEK", cat: "cms", tag: "active", desc: "CMS detection and exploitation suite.", cmds: [
+                { grp: "SCAN", cmd: "python3 cmseek.py -u https://{{target}}", note: "Auto CMS detection and scan" }
+            ]},
+            { id: "vscan", name: "VSCAN", cat: "cms", tag: "active", desc: "Open source vulnerability scanner for WordPress.", cmds: [
+                { grp: "SCAN", cmd: "vscan --url https://{{target}}", note: "WordPress vulnerability scan" }
+            ]},
+
+            // === GOOGLE DORKS ===
+            { id: "dork_login", name: "LOGIN PORTALS", cat: "dork", tag: "link", type: "link", desc: "Find exposed login pages.", url: "https://www.google.com/search?q=site:{{target}}+inurl:login+OR+inurl:signin" },
+            { id: "dork_files", name: "SENSITIVE FILES", cat: "dork", tag: "link", type: "link", desc: "Find pdf, xls, docx, ppt files.", url: "https://www.google.com/search?q=site:{{target}}+ext:pdf+OR+ext:xls+OR+ext:docx+OR+ext:ppt" },
+            { id: "dork_config", name: "CONFIG FILES", cat: "dork", tag: "link", type: "link", desc: "Find exposed env, config, ini files.", url: "https://www.google.com/search?q=site:{{target}}+ext:env+OR+ext:config+OR+ext:ini" },
+            { id: "dork_db", name: "DATABASE FILES", cat: "dork", tag: "link", type: "link", desc: "Find SQL dumps and database files.", url: "https://www.google.com/search?q=site:{{target}}+ext:sql+OR+ext:db+OR+ext:dbf+OR+ext:mdb" },
+            { id: "dork_php", name: "PHP ERRORS", cat: "dork", tag: "link", type: "link", desc: "Find exposed PHP errors and logs.", url: "https://www.google.com/search?q=site:{{target}}+\"PHP+Parse+error\"+OR+\"Warning:\"+OR+\"Fatal+error:\"" },
+            { id: "dork_s3", name: "S3 BUCKETS", cat: "dork", tag: "link", type: "link", desc: "Find open Amazon S3 buckets.", url: "https://www.google.com/search?q=site:s3.amazonaws.com+{{target}}+OR+s3-{{target}}" },
+            { id: "dork_admin", name: "ADMIN PANELS", cat: "dork", tag: "link", type: "link", desc: "Find exposed admin interfaces.", url: "https://www.google.com/search?q=site:{{target}}+inurl:admin+OR+inurl:dashboard+OR+inurl:cp" },
+            { id: "dork_backup", name: "BACKUP FILES", cat: "dork", tag: "link", type: "link", desc: "Find backup and archive files.", url: "https://www.google.com/search?q=site:{{target}}+ext:bak+OR+ext:backup+OR+ext:old+OR+ext:zip" },
+
+            // === CRYPTOGRAPHY ===
+            { id: "hashid", name: "HASH IDENTIFIER", cat: "crypto", tag: "util", desc: "Identify hash types from a hash string.", cmds: [
+                { grp: "ID", cmd: "hashid 'HASH_STRING'", note: "Identify hash type" }
+            ]},
+            { id: "john", name: "JOHN THE RIPPER", cat: "crypto", tag: "active", desc: "Fast password cracker with multiple attack modes.", cmds: [
+                { grp: "CRACK", cmd: "john --wordlist=rockyou.txt hash.txt", note: "Dictionary attack" },
+                { grp: "BRUTE", cmd: "john --incremental hash.txt", note: "Incremental brute-force" }
+            ]},
+            { id: "hashcat", name: "HASHCAT", cat: "crypto", tag: "active", desc: "World's fastest password recovery tool.", cmds: [
+                { grp: "CRACK", cmd: "hashcat -m 0 -a 0 hash.txt rockyou.txt", note: "Straight dictionary attack" }
+            ]},
+            { id: "int_jwt", name: "LOCAL JWT DECODER", cat: "crypto", tag: "util", type: "util", utilId: "jwt", desc: "Decode JWTs directly in this dashboard with offline support." },
+            { id: "int_crypto", name: "ENCODING SUITE", cat: "crypto", tag: "util", type: "util", utilId: "crypto", desc: "Base64, Hex, URL, ROT13 converter with batch processing." },
+            { id: "rsactftool", name: "RSACTFTOOL", cat: "crypto", tag: "util", desc: "RSA tool for CTF challenges.", cmds: [
+                { grp: "ATTACK", cmd: "rsactftool --publickey key.pub --uncipher ciphertext", note: "RSA ciphertext attack" }
+            ]},
+            { id: "stegsolve", name: "STEGSOLVE", cat: "crypto", tag: "util", desc: "Steganography tool for CTF challenges.", cmds: [
+                { grp: "RUN", cmd: "java -jar Stegsolve.jar", note: "Launch steganography analyzer" }
+            ]},
+            { id: "cyberchef", name: "CYBERCHEF", cat: "crypto", tag: "link", type: "link", desc: "The Cyber Swiss Army Knife for encryption/encoding.", url: "https://gchq.github.io/CyberChef/" },
+            { id: "jwt_io", name: "JWT.IO", cat: "crypto", tag: "link", type: "link", desc: "Online JWT debugger and encoder/decoder.", url: "https://jwt.io" },
+
+            // === UTILITIES ===
+            { id: "nmap", name: "NMAP", cat: "utils", tag: "active", desc: "Network discovery and security auditing tool.", cmds: [
+                { grp: "QUICK", cmd: "nmap -sV -sC {{target}}", note: "Version detection + scripts" },
+                { grp: "FULL", cmd: "nmap -p- -sV -O -T4 {{target}}", note: "Full TCP port scan" }
+            ]},
+            { id: "masscan", name: "MASSCAN", cat: "utils", tag: "active", desc: "Internet-scale port scanner with async capabilities.", cmds: [
+                { grp: "FAST", cmd: "masscan -p1-65535 {{target}} --rate=1000", note: "Full port scan at 1000 packets/sec" },
+                { grp: "TOP", cmd: "masscan {{target}} --top-ports 100", note: "Top 100 ports scan" }
+            ]},
+            { id: "metasploit", name: "METASPLOIT", cat: "utils", tag: "active", desc: "Penetration testing framework with exploit development.", cmds: [
+                { grp: "LAUNCH", cmd: "msfconsole", note: "Launch Metasploit Framework" }
+            ]},
+            { id: "burp", name: "BURP SUITE", cat: "utils", tag: "gui", desc: "Industry standard web application security testing.", cmds: [
+                { grp: "LAUNCH", cmd: "burpsuite &", note: "Start Burp Suite GUI" }
+            ]},
+            { id: "zap", name: "OWASP ZAP", cat: "utils", tag: "active", desc: "Open source web application security scanner.", cmds: [
+                { grp: "SCAN", cmd: "zap-cli quick-scan -s all https://{{target}}", note: "Automated vulnerability scan" }
+            ]},
+            { id: "eyewitness", name: "EYEWITNESS", cat: "utils", tag: "active", desc: "Website screenshot and information gathering tool.", cmds: [
+                { grp: "SNAP", cmd: "eyewitness --web -f urls.txt", note: "Batch website screenshot" }
+            ]},
+            { id: "sn1per", name: "SN1PER", cat: "utils", tag: "active", desc: "Automated pentest reconnaissance scanner.", cmds: [
+                { grp: "SCAN", cmd: "sniper -t {{target}}", note: "Full automated reconnaissance" }
+            ]},
+            { id: "reconng", name: "RECON-NG", cat: "utils", tag: "active", desc: "Web reconnaissance framework with modules.", cmds: [
+                { grp: "LAUNCH", cmd: "recon-ng", note: "Launch Recon-ng framework" }
+            ]},
+            { id: "maltego", name: "MALTEGO", cat: "utils", tag: "gui", desc: "Interactive data mining and link analysis tool.", cmds: [
+                { grp: "LAUNCH", cmd: "maltego &", note: "Start Maltego GUI" }
+            ]},
+
+            // === KNOWLEDGE BASE ===
+            { id: "kali", name: "KALI LINUX", cat: "resources", tag: "link", type: "link", desc: "Download the leading penetration testing distribution.", url: "https://www.kali.org/get-kali/" },
+            { id: "payloads", name: "PAYLOADS ALL THE THINGS", cat: "resources", tag: "link", type: "link", desc: "Comprehensive list of useful payloads and bypasses.", url: "https://github.com/swisskyrepo/PayloadsAllTheThings" },
+            { id: "seclists", name: "SECLISTS", cat: "resources", tag: "link", type: "link", desc: "Collection of multiple types of lists for security assessments.", url: "https://github.com/danielmiessler/SecLists" },
+            { id: "hacktricks", name: "HACKTRICKS", cat: "resources", tag: "link", type: "link", desc: "Hacking techniques and tricks for pentesters.", url: "https://book.hacktricks.xyz/" },
+            { id: "gtfobins", name: "GTFOBINS", cat: "resources", tag: "link", type: "link", desc: "Unix binaries that can be exploited to bypass restrictions.", url: "https://gtfobins.github.io/" },
+            { id: "exploitdb", name: "EXPLOIT-DB", cat: "resources", tag: "link", type: "link", desc: "Archive of exploits and vulnerable software.", url: "https://www.exploit-db.com/" },
+            { id: "cve", name: "CVE DATABASE", cat: "resources", tag: "link", type: "link", desc: "Common Vulnerabilities and Exposures database.", url: "https://cve.mitre.org/" },
+            { id: "hackerone", name: "HACKERONE", cat: "resources", tag: "link", type: "link", desc: "Bug bounty platform with disclosed reports.", url: "https://hackerone.com/hacktivity" },
+            { id: "bugcrowd", name: "BUGCROWD", cat: "resources", tag: "link", type: "link", desc: "Bug bounty and vulnerability disclosure platform.", url: "https://www.bugcrowd.com/bug-bounty-list/" },
+            { id: "pentestbook", name: "PENTEST BOOK", cat: "resources", tag: "link", type: "link", desc: "Penetration testing methodology and reference.", url: "https://pentestbook.six2dez.com/" },
+            { id: "cheatsheets", name: "CHEATSHEETS", cat: "resources", tag: "link", type: "link", desc: "Security testing cheatsheets and references.", url: "https://github.com/OWASP/CheatSheetSeries" }
+        ];
+
+        // =========================================
+        // GLOBAL VARIABLES
+        // =========================================
+        let currentTarget = "example.com";
+        let activeCategory = "recon";
+
+        // =========================================
+        // INITIALIZATION
+        // =========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavigation();
+            renderTools();
+            initParticles();
+            initSearch();
+            showToast('CYBER OPS V6.0 // WARCHIEF COMMAND ONLINE', 'success');
+        });
+
+        // =========================================
+        // SIDEBAR NAVIGATION
+        // =========================================
+        function renderNavigation() {
+            const nav = document.getElementById('navContainer');
+            let html = '';
+            
+            for (const [key, val] of Object.entries(categories)) {
+                html += `
+                    <div class="nav-section">
+                        <div class="section-label">${val.label}</div>
+                `;
+                
+                // Get tools for this category
+                const catTools = toolsDB.filter(t => t.cat === key);
+                catTools.slice(0, 5).forEach(tool => {
+                    html += `
+                        <a href="#${tool.id}" class="nav-item" onclick="scrollToTool('${tool.id}')">
+                            <i class="fas ${val.icon} nav-icon"></i>
+                            <span>${tool.name}</span>
+                        </a>
+                    `;
+                });
+                
+                if (catTools.length > 5) {
+                    html += `
+                        <a href="#cat-${key}" class="nav-item" onclick="showCategory('${key}')">
+                            <i class="fas fa-ellipsis-h nav-icon"></i>
+                            <span>+${catTools.length - 5} MORE...</span>
+                        </a>
+                    `;
+                }
+                
+                html += `</div>`;
+            }
+            
+            nav.innerHTML = html;
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // =========================================
+        // TOOLS RENDERING
+        // =========================================
+        function renderTools() {
+            const container = document.getElementById('toolsContainer');
+            container.innerHTML = '';
+
+            const grouped = {};
+            toolsDB.forEach(t => {
+                if (!grouped[t.cat]) grouped[t.cat] = [];
+                grouped[t.cat].push(t);
+            });
+
+            for (const [key, val] of Object.entries(categories)) {
+                if (!grouped[key]) continue;
+
+                const section = document.createElement('div');
+                section.className = "tools-section";
+                section.id = `cat-${key}`;
+
+                let cardsHtml = '';
+                grouped[key].forEach(tool => {
+                    cardsHtml += renderToolCard(tool);
+                });
+
+                section.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas ${val.icon}"></i>
+                        </div>
+                        <div class="section-title">${val.label}</div>
+                    </div>
+                    <div class="tools-grid">${cardsHtml}</div>
+                `;
+
+                container.appendChild(section);
+            }
+        }
+
+        function renderToolCard(tool) {
+            const cleanUrl = tool.url ? tool.url.replace('{{target}}', currentTarget) : '';
+            let actionBtn = '';
+            let mainContent = '';
+
+            if (tool.type === 'link') {
+                actionBtn = `
+                    <button class="tool-btn" onclick="window.open('${cleanUrl}', '_blank')">
+                        <i class="fas fa-external-link-alt"></i>
+                        OPEN LINK
+                    </button>
+                `;
+                mainContent = `
+                    <div style="color: var(--neon-blue); font-size: 0.8rem; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-link"></i>
+                        EXTERNAL RESOURCE
+                    </div>
+                `;
+            } else if (tool.type === 'util') {
+                actionBtn = `
+                    <button class="tool-btn primary" onclick="openUtil('${tool.utilId}')">
+                        <i class="fas fa-rocket"></i>
+                        LAUNCH MODULE
+                    </button>
+                `;
+                mainContent = `
+                    <div style="color: var(--matrix-green); font-size: 0.8rem; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-microchip"></i>
+                        INTERACTIVE MODULE
+                    </div>
+                `;
+            } else {
+                const cmd = tool.cmds[0].cmd.replace(/{{target}}/g, currentTarget);
+                actionBtn = `
+                    <button class="tool-btn" onclick="copyText('${cmd.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-copy"></i>
+                        COPY
+                    </button>
+                    <button class="tool-btn primary" onclick="showCmds('${tool.id}')">
+                        <i class="fas fa-cogs"></i>
+                        OPTIONS
+                    </button>
+                `;
+                mainContent = `<div class="tool-command">${cmd}</div>`;
+            }
+
+            let badgeClass = 'tag-util';
+            if (tool.tag === 'passive') badgeClass = 'tag-passive';
+            if (tool.tag === 'active') badgeClass = 'tag-active';
+            if (tool.tag === 'link') badgeClass = 'tag-link';
+
+            return `
+                <div class="tool-card" id="${tool.id}">
+                    <div class="tool-header">
+                        <div class="tool-name">${tool.name}</div>
+                        <div class="tool-tag ${badgeClass}">${tool.tag.toUpperCase()}</div>
+                    </div>
+                    ${mainContent}
+                    <div class="tool-desc">${tool.desc}</div>
+                    <div class="tool-actions">${actionBtn}</div>
+                </div>
+            `;
+        }
+
+        // =========================================
+        // TARGET MANAGEMENT
+        // =========================================
+        function updateScope() {
+            currentTarget = document.getElementById('targetInput').value.trim() || 'example.com';
+            renderTools();
+            showToast(`TARGET UPDATED: ${currentTarget}`, 'success');
+        }
+
+        // =========================================
+        // UTILITY MODULES
+        // =========================================
+        function openUtil(type) {
+            const modal = document.getElementById('utilModal');
+            const title = document.getElementById('utilTitle');
+            const body = document.getElementById('utilBody');
+
+            modal.classList.add('active');
+
+            if (type === 'jwt') {
+                title.innerText = "JWT DECODER & FORGER";
+                body.innerHTML = `
+                    <div style="margin-bottom: 1rem; color: var(--text-secondary);">
+                        Decode, verify, and forge JSON Web Tokens offline.
+                    </div>
+                    <div class="io-container">
+                        <div class="io-box">
+                            <textarea id="jwtInput" placeholder="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"></textarea>
+                        </div>
+                        <div class="io-box">
+                            <textarea id="jwtOutput" readonly placeholder="Decoded Header & Payload will appear here..."></textarea>
+                        </div>
+                    </div>
+                    <div class="utility-controls">
+                        <button class="cyber-button primary" onclick="decodeJWT()">
+                            <i class="fas fa-code"></i>
+                            DECODE TOKEN
+                        </button>
+                        <button class="cyber-button" onclick="forgeJWT()">
+                            <i class="fas fa-hammer"></i>
+                            FORGE TOKEN
+                        </button>
+                        <button class="cyber-button" onclick="validateJWT()">
+                            <i class="fas fa-check-circle"></i>
+                            VALIDATE SIGNATURE
+                        </button>
+                    </div>
+                `;
+            } else if (type === 'crypto') {
+                title.innerText = "CRYPTOGRAPHY SUITE";
+                body.innerHTML = `
+                    <div style="margin-bottom: 1rem; color: var(--text-secondary);">
+                        Encoding, decoding, hashing, and encryption utilities.
+                    </div>
+                    <div class="utility-controls">
+                        <button class="cyber-button" onclick="doCrypto('b64e')">BASE64 ENCODE</button>
+                        <button class="cyber-button" onclick="doCrypto('b64d')">BASE64 DECODE</button>
+                        <button class="cyber-button" onclick="doCrypto('url')">URL ENCODE</button>
+                        <button class="cyber-button" onclick="doCrypto('hex')">TO HEX</button>
+                        <button class="cyber-button" onclick="doCrypto('rot13')">ROT13</button>
+                        <button class="cyber-button" onclick="doCrypto('md5')">MD5 HASH</button>
+                        <button class="cyber-button" onclick="doCrypto('sha256')">SHA256</button>
+                        <button class="cyber-button primary" onclick="doCrypto('xor')">XOR ENCRYPT</button>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="cryptoKey" class="cyber-input" placeholder="Encryption Key (for XOR)" style="width: 100%;">
+                    </div>
+                    <div class="io-container">
+                        <div class="io-box">
+                            <textarea id="cryptoInput" placeholder="Input text..."></textarea>
+                        </div>
+                        <div class="io-box">
+                            <textarea id="cryptoOutput" readonly placeholder="Output will appear here..."></textarea>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function decodeJWT() {
+            const val = document.getElementById('jwtInput').value.trim();
+            try {
+                const parts = val.split('.');
+                if (parts.length !== 3) throw new Error("Invalid JWT format: Must have 3 parts separated by dots");
+                const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+                const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                document.getElementById('jwtOutput').value = 
+                    "=== HEADER ===\n" + JSON.stringify(header, null, 2) + 
+                    "\n\n=== PAYLOAD ===\n" + JSON.stringify(payload, null, 2) +
+                    "\n\n=== SIGNATURE ===\n" + parts[2];
+            } catch(e) {
+                document.getElementById('jwtOutput').value = "ERROR: " + e.message;
+            }
+        }
+
+        function forgeJWT() {
+            const header = {
+                alg: "HS256",
+                typ: "JWT"
+            };
+            const payload = {
+                sub: "admin",
+                name: "System Administrator",
+                iat: Math.floor(Date.now() / 1000),
+                exp: Math.floor(Date.now() / 1000) + 3600,
+                admin: true
+            };
+            
+            const headerB64 = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+            const payloadB64 = btoa(JSON.stringify(payload)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+            
+            document.getElementById('jwtInput').value = `${headerB64}.${payloadB64}.FORGED_SIGNATURE`;
+            showToast('JWT TEMPLATE GENERATED - ADD YOUR SIGNATURE', 'info');
+        }
+
+        function doCrypto(mode) {
+            const inp = document.getElementById('cryptoInput').value;
+            let out = "";
+            const key = document.getElementById('cryptoKey')?.value || "secret";
+            
+            try {
+                switch(mode) {
+                    case 'b64e': out = btoa(inp); break;
+                    case 'b64d': out = atob(inp); break;
+                    case 'url': out = encodeURIComponent(inp); break;
+                    case 'hex': 
+                        out = inp.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+                        break;
+                    case 'rot13': 
+                        out = inp.replace(/[a-zA-Z]/g, function(c) {
+                            return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+                        });
+                        break;
+                    case 'md5': 
+                        // Simple MD5-like hash (for demo)
+                        out = Array.from(inp).reduce((hash, char) => {
+                            return ((hash << 5) - hash) + char.charCodeAt(0);
+                        }, 0).toString(16);
+                        break;
+                    case 'sha256':
+                        // Simple SHA-like hash (for demo)
+                        out = Array.from(inp).reduce((hash, char, i) => {
+                            return hash ^ (char.charCodeAt(0) << (i % 24));
+                        }, 0x811c9dc5).toString(16);
+                        break;
+                    case 'xor':
+                        out = Array.from(inp).map((char, i) => {
+                            return String.fromCharCode(char.charCodeAt(0) ^ key.charCodeAt(i % key.length));
+                        }).join('');
+                        out = btoa(out);
+                        break;
+                }
+            } catch(e) { 
+                out = "ERROR: " + e.message; 
+            }
+            
+            document.getElementById('cryptoOutput').value = out;
+        }
+
+        // =========================================
+        // COMMAND MATRIX
+        // =========================================
+        function showCmds(id) {
+            const tool = toolsDB.find(t => t.id === id);
+            if (!tool) return;
+            
+            document.getElementById('cmdTitle').innerText = `${tool.name} COMMAND MATRIX`;
+            const list = document.getElementById('cmdList');
+            list.innerHTML = '';
+            
+            tool.cmds.forEach(c => {
+                const cmd = c.cmd.replace(/{{target}}/g, currentTarget);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="command-group">${c.grp}</div>
+                        <div class="command-text">${cmd}</div>
+                        <div class="command-note">${c.note}</div>
+                    </td>
+                    <td style="text-align: right; vertical-align: middle;">
+                        <button class="cyber-button" onclick="copyText('${cmd.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-copy"></i>
+                            COPY
+                        </button>
+                    </td>
+                `;
+                list.appendChild(row);
+            });
+            
+            document.getElementById('cmdModal').classList.add('active');
+        }
+
+        // =========================================
+        // SCRIPT GENERATORS
+        // =========================================
+        function generateInstallScript() {
+            const content = `#!/bin/bash
+# CYBER OPS V6.0 AUTO-INSTALLER
+# Automated environment setup for penetration testing
+
+echo "[*] CYBER OPS V6.0 INSTALLATION INITIATED"
+echo "[*] System Preparation..."
+
+# Update system
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y git curl wget python3 python3-pip python3-venv golang-go \
+    nmap masscan nikto sqlmap john hashcat hydra metasploit-framework \
+    docker.io docker-compose build-essential libssl-dev libffi-dev
+
+# Configure Go environment
+export GOPATH=\$HOME/go
+export PATH=\$PATH:/usr/local/go/bin:\$GOPATH/bin
+echo 'export GOPATH=\$HOME/go' >> ~/.bashrc
+echo 'export PATH=\$PATH:/usr/local/go/bin:\$GOPATH/bin' >> ~/.bashrc
+
+# Install Go tools
+echo "[*] Installing Go-based tools..."
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install -v github.com/owasp-amass/amass/v3/...@master
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+go install -v github.com/ffuf/ffuf@latest
+go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+go install -v github.com/projectdiscovery/katana/cmd/katana@latest
+go install -v github.com/tomnomnom/waybackurls@latest
+go install -v github.com/tomnomnom/anew@latest
+go install -v github.com/tomnomnom/assetfinder@latest
+
+# Install Python tools
+echo "[*] Installing Python tools..."
+pip3 install arjun droopescan xsstrike commix jwt-tool
+pip3 install scoutsuite cloudsploit pacu
+
+# Download wordlists
+echo "[*] Downloading security wordlists..."
+mkdir -p ~/wordlists
+git clone https://github.com/danielmiessler/SecLists.git ~/wordlists/SecLists
+git clone https://github.com/berzerk0/Probable-Wordlists.git ~/wordlists/Probable-Wordlists
+
+# Setup directories
+mkdir -p ~/tools ~/reports ~/scans
+
+echo "[*] Installation complete!"
+echo "[*] Please restart your terminal or run: source ~/.bashrc"
+echo "[*] CYBER OPS V6.0 READY FOR DEPLOYMENT"
+`;
+
+            downloadFile(content, "cyberops_install.sh");
+            showToast('INSTALLER SCRIPT GENERATED', 'success');
+        }
+
+        function generateReconScript() {
+            let content = `#!/bin/bash
+# CYBER OPS V6.0 RECONNAISSANCE SCRIPT
+# Target: ${currentTarget}
+# Generated: ${new Date().toISOString()}
+
+TARGET="${currentTarget}"
+OUTPUT_DIR="recon_\${TARGET}_\$(date +%Y%m%d_%H%M%S)"
+mkdir -p "\${OUTPUT_DIR}" && cd "\${OUTPUT_DIR}"
+
+echo "[*] Starting reconnaissance on \${TARGET}"
+echo "[*] Output directory: \${OUTPUT_DIR}"
+
+# Subdomain enumeration
+echo "[+] Phase 1: Subdomain Discovery"
+subfinder -d "\${TARGET}" -o subfinder.txt
+amass enum -passive -d "\${TARGET}" -o amass.txt
+assetfinder --subs-only "\${TARGET}" > assetfinder.txt
+
+# Merge and deduplicate
+cat *.txt | sort -u > all_subs.txt
+echo "[+] Found \$(wc -l < all_subs.txt) unique subdomains"
+
+# DNS resolution
+echo "[+] Phase 2: DNS Resolution"
+massdns -r resolvers.txt -o S -w resolved.txt < all_subs.txt
+
+# Live host detection
+echo "[+] Phase 3: Live Host Detection"
+cat resolved.txt | cut -d' ' -f1 | httpx -title -sc -tech-detect -o live_hosts.txt
+
+# Port scanning
+echo "[+] Phase 4: Port Scanning"
+naabu -list live_hosts.txt -top-ports 100 -o ports.txt
+
+# Web crawling
+echo "[+] Phase 5: Web Crawling"
+cat live_hosts.txt | katana -d 3 -o crawled_urls.txt
+
+# Vulnerability scanning
+echo "[+] Phase 6: Vulnerability Assessment"
+nuclei -list live_hosts.txt -s critical,high -o nuclei_critical.txt
+
+# Screenshots
+echo "[+] Phase 7: Visual Reconnaissance"
+cat live_hosts.txt | aquatone -out screenshots
+
+echo "[*] Reconnaissance complete!"
+echo "[*] Results saved in: \${OUTPUT_DIR}"
+echo "[*] Summary:"
+echo "    - Subdomains: \$(wc -l < all_subs.txt)"
+echo "    - Live hosts: \$(wc -l < live_hosts.txt)"
+echo "    - Vulnerabilities: \$(wc -l < nuclei_critical.txt)"
+`;
+
+            downloadFile(content, `recon_${currentTarget.replace(/[^a-z0-9]/gi, '_')}.sh`);
+            showToast('RECON SCRIPT GENERATED', 'success');
+        }
+
+        function generateFullReport() {
+            const content = `# CYBER OPS V6.0 - FULL SCAN REPORT
+## Target: ${currentTarget}
+## Generated: ${new Date().toISOString()}
+## Scanner: WARCHIEF COMMAND INTERFACE
+
+## EXECUTIVE SUMMARY
+- **Target**: ${currentTarget}
+- **Scan Date**: ${new Date().toLocaleDateString()}
+- **Scan Duration**: Full reconnaissance cycle
+- **Tools Used**: 85+ security modules
+
+## RECOMMENDED ACTIONS
+1. Review subdomain enumeration results
+2. Investigate live hosts and open ports
+3. Analyze vulnerability scan findings
+4. Validate critical findings manually
+5. Prepare penetration testing report
+
+## NEXT STEPS
+- Run detailed vulnerability assessment
+- Conduct manual verification of findings
+- Prepare for exploitation phase
+- Document all findings in bug bounty report
+
+## COMMAND REFERENCE
+All generated commands are available in the CYBER OPS interface.
+Use the Command Matrix for detailed tool options.
+
+---
+**Generated by CYBER OPS V6.0 | WARCHIEF COMMAND**
+`;
+
+            downloadFile(content, `report_${currentTarget.replace(/[^a-z0-9]/gi, '_')}.md`);
+            showToast('REPORT TEMPLATE GENERATED', 'success');
+        }
+
+        // =========================================
+        // HELPER FUNCTIONS
+        // =========================================
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            showToast('COMMAND COPIED TO CLIPBOARD', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toastMessage');
+            
+            messageEl.textContent = message;
+            
+            // Set icon based on type
+            const icon = toast.querySelector('.toast-icon');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle toast-icon';
+                toast.style.borderColor = 'var(--matrix-green)';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle toast-icon';
+                toast.style.borderColor = 'var(--hacker-red)';
+            } else if (type === 'info') {
+                icon.className = 'fas fa-info-circle toast-icon';
+                toast.style.borderColor = 'var(--neon-blue)';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            showToast(`THEME: ${newTheme.toUpperCase()} MODE`, 'info');
+        }
+
+        function scrollToTool(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.style.boxShadow = '0 0 30px var(--neon-blue)';
+                setTimeout(() => element.style.boxShadow = '', 2000);
+            }
+        }
+
+        function showCategory(cat) {
+            const element = document.getElementById(`cat-${cat}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // =========================================
+        // SEARCH FUNCTIONALITY
+        // =========================================
+        function initSearch() {
+            const searchInput = document.getElementById('globalSearch');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length === 0) {
+                    document.querySelectorAll('.tool-card').forEach(card => {
+                        card.style.display = 'flex';
+                    });
+                    return;
+                }
+                
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(query) ? 'flex' : 'none';
+                });
+                
+                // Highlight matching sections
+                document.querySelectorAll('.tools-section').forEach(section => {
+                    const cards = section.querySelectorAll('.tool-card');
+                    const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+                    section.style.display = visibleCards.length > 0 ? 'block' : 'none';
+                });
+            });
+        }
+
+        // =========================================
+        // PARTICLE SYSTEM
+        // =========================================
+        function initParticles() {
+            const colors = [
+                'var(--neon-blue)',
+                'var(--matrix-green)',
+                'var(--hacker-red)',
+                'var(--cyber-purple)',
+                'var(--crypto-gold)'
+            ];
+            
+            for (let i = 0; i < 50; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'pulse-dot';
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.top = `${Math.random() * 100}%`;
+                dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                dot.style.animationDelay = `${Math.random() * 3}s`;
+                dot.style.animationDuration = `${2 + Math.random() * 3}s`;
+                document.body.appendChild(dot);
+            }
+        }
+
+        // =========================================
+        // KEYBOARD SHORTCUTS
+        // =========================================
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K for search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('globalSearch').focus();
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                closeModal('utilModal');
+                closeModal('cmdModal');
+            }
+            
+            // Ctrl/Cmd + Enter to update target
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                updateScope();
+            }
+        });
+    </script>
+</body>
+</html>
